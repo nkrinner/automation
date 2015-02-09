@@ -135,6 +135,7 @@ hvmix=(${hvmix//,/ })
 : ${want_xen:=0}
 : ${want_hyperv:=0}
 : ${want_esxi:=0}
+: ${hv_list:=''}
 
 emulator=/usr/bin/qemu-system-$(uname -m)
 if [ -x /usr/bin/qemu-kvm ] && file /usr/bin/qemu-kvm | grep -q ELF; then
@@ -253,9 +254,10 @@ function sshrun()
         export hvmix="${hvmix[*]}";
 
         ### Devel: Multi-hypervisor support
-        export want_xen=$want_xen
-        export want_hyperv=$want_hyperv
-        export want_esxi=$want_esxi
+        export want_xen=$want_xen ;
+        export want_hyperv=$want_hyperv ;
+        export want_esxi=$want_esxi ;
+        export hv_list=${hv_list[*]} ;
 
         export all_with_ssl=$all_with_ssl ;
         export glance_with_ssl=$glance_with_ssl ;
