@@ -12,6 +12,7 @@ clusternodesdata=
 clusternodesnetwork=
 clusternodesservices=
 hvmix=($hvmix)
+hv_list=($hv_list)
 
 export cloud=${1}
 shift
@@ -1578,12 +1579,18 @@ function do_one_proposal()
 
 function do_nova_proposal()
 {
+
 ### Devel: Multi-hypervisor supprt
 ### Code to deploy nove with multiple hypervisors goes here
-# for i in $nodelist
-# do 
-#    proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-hv_list[i]']" "nodename"
-# done
+
+    local cmachines=`crowbar machines list | grep ^d`
+    local i
+
+    for i in $cmachines
+    do
+    proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']" "$i"
+     done
+    do_one_proposal "nova" "default"
 }
 
 # apply all wanted proposals on crowbar admin node

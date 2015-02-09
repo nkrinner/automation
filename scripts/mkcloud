@@ -257,7 +257,7 @@ function sshrun()
         export want_xen=$want_xen ;
         export want_hyperv=$want_hyperv ;
         export want_esxi=$want_esxi ;
-        export hv_list=${hv_list[*]} ;
+        export hv_list="${hv_list[*]}" ;
 
         export all_with_ssl=$all_with_ssl ;
         export glance_with_ssl=$glance_with_ssl ;
