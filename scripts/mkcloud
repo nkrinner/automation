@@ -131,7 +131,7 @@ scp="scp $sshopts"
 [ -z "$localreposdir_src" ] && localreposdir_target=""
 hvmix=(${hvmix//,/ })
 
-### Devel: Multi hypervisor support
+### Devel: Multi-hypervisor support
 : ${want_xen:=''}
 : ${want_hyperv:=''}
 : ${want_esxi:=''}
@@ -252,7 +252,7 @@ function sshrun()
         export shell=$shell ;
         export hvmix="${hvmix[*]}";
 
-        ### Devel: Multi hypervisor support
+        ### Devel: Multi-hypervisor support
         export want_xen=$want_xen
         export want_hyperv=$want_hyperv
         export want_esxi=$want_esxi
@@ -1152,9 +1152,9 @@ function sanity_checks()
         sleep 20
     fi
 
-    ### Devel: Multi hypervisor support
+    ### Devel: Multi-hypervisor support
     if [ $nodenumber -lt $((want_xen + want_hyperv + want_esxi)) ]
-       echo 'Not enough compute nodes available to satisfie all requested hypervisors'
+       echo 'Not enough compute nodes available to satisfy all requested hypervisors'
        echo '$nodenumber has to be at least as big as the sum of all nodes designated as'
        echo 'hosts for xen, hyperv and esxi virtualization hosts.'
        exit 1

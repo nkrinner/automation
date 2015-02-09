@@ -1576,6 +1576,12 @@ function do_one_proposal()
     update_one_proposal "$proposal" "$proposaltype"
 }
 
+function do_nova_proposal()
+{
+### Devel: Multi-hypervisor supprt
+### Code to deploy nove with multiple hypervisors goes here
+}
+
 # apply all wanted proposals on crowbar admin node
 function onadmin_proposal()
 {
@@ -1622,6 +1628,9 @@ function onadmin_proposal()
                 for cluster in data services network ; do
                     do_one_proposal "$proposal" "$cluster"
                 done
+                ;;
+            nova)
+                do_nova_proposal
                 ;;
             *)
                 do_one_proposal "$proposal" "default"
