@@ -1185,7 +1185,7 @@ function sanity_checks()
     fi
 
     ### Devel: Multi-hypervisor support
-    if [ $nodenumber -lt $((want_xen + want_hyperv + want_esxi)) ]
+    if [ $nodenumber -lt $((want_xen + want_hyperv + want_esxi)) ] ; then
        echo 'Not enough compute nodes available to satisfy all requested hypervisors'
        echo '$nodenumber has to be at least as big as the sum of all nodes designated as'
        echo 'hosts for xen, hyperv and esxi virtualization hosts.'
