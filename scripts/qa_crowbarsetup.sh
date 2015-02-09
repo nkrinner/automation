@@ -1580,6 +1580,10 @@ function do_nova_proposal()
 {
 ### Devel: Multi-hypervisor supprt
 ### Code to deploy nove with multiple hypervisors goes here
+# for i in $nodelist
+# do 
+#    proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-hv_list[i]']" "nodename"
+# done
 }
 
 # apply all wanted proposals on crowbar admin node
