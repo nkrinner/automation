@@ -1588,6 +1588,8 @@ function do_nova_proposal()
 
     for i in $cmachines
     do
+    echo "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']"
+    echo  "$i"
     proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']" "$i"
      done
     do_one_proposal "nova" "default"
