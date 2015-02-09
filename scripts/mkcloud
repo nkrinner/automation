@@ -776,18 +776,21 @@ function create_hypervisor_list()
       hv_list[$i]="kvm"
     done
     if [ $want_xen -gt 0 ]
+    then
       for i in $(seq  $((nodenumber - requested_hypervisors + 1)) $((nodenumber - requested_hypervisors + want_xen)) )
       do
         hv_list[$i]="xen"
       done
     fi
     if [ $want_hyperv -gt 0 ]
+    then
       for i in $(seq  $((nodenumber - requested_hypervisors + want_xen + 1)) $((nodenumber - requested_hypervisors + want_xen + want_hyperv)) )
       do
         hv_list[$i]="hyperv"
       done
     fi
     if [ $want_esxi -gt 0 ]
+    then
       for i in $(seq  $((nodenumber - requested_hypervisors + want_xen + want_hyperv + 1)) $((nodenumber - requested_hypervisors + want_xen + want_hyperv + want_esxi)) )
       do
         hv_list[$i]="esxi"
