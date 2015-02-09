@@ -131,6 +131,11 @@ scp="scp $sshopts"
 [ -z "$localreposdir_src" ] && localreposdir_target=""
 hvmix=(${hvmix//,/ })
 
+### Devel: Multi hypervisor support
+: ${want_xen:=''}
+: ${want_hyperv:=''}
+: ${want_esxi:=''}
+
 emulator=/usr/bin/qemu-system-$(uname -m)
 if [ -x /usr/bin/qemu-kvm ] && file /usr/bin/qemu-kvm | grep -q ELF; then
     # on SLE11, qemu-kvm is preferred, since qemu-system-x86_64 is
@@ -246,6 +251,11 @@ function sshrun()
         export cephvolumenumber=$cephvolumenumber ;
         export shell=$shell ;
         export hvmix="${hvmix[*]}";
+
+        ### Devel: Multi hypervisor support
+        export want_xen=$want_xen
+        export want_hyperv=$want_hyperv
+        export want_esxi=$want_esxi
 
         export all_with_ssl=$all_with_ssl ;
         export glance_with_ssl=$glance_with_ssl ;
@@ -1140,6 +1150,14 @@ function sanity_checks()
         echo
         echo "Waiting 20 seconds review time. Press Ctrl-C to cancel this run."
         sleep 20
+    fi
+
+    ### Devel: Multi hypervisor support
+    if [ $nodenumber -lt $((want_xen + want_hyperv + want_esxi)) ]
+       echo 'Not enough compute nodes available to satisfie all requested hypervisors'
+       echo '$nodenumber has to be at least as big as the sum of all nodes designated as'
+       echo 'hosts for xen, hyperv and esxi virtualization hosts.'
+       exit 1
     fi
 
     vgdisplay "$cloudvg" >/dev/null 2>&1 && needcvol=
