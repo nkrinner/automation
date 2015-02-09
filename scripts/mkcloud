@@ -132,9 +132,9 @@ scp="scp $sshopts"
 hvmix=(${hvmix//,/ })
 
 ### Devel: Multi-hypervisor support
-: ${want_xen:=''}
-: ${want_hyperv:=''}
-: ${want_esxi:=''}
+: ${want_xen:=0}
+: ${want_hyperv:=0}
+: ${want_esxi:=0}
 
 emulator=/usr/bin/qemu-system-$(uname -m)
 if [ -x /usr/bin/qemu-kvm ] && file /usr/bin/qemu-kvm | grep -q ELF; then
@@ -765,11 +765,39 @@ function restartcloud()
     done
 }
 
+function create_hypervisor_list()
+{
+    local reqeuested_hypervisors
+    requested_hypervisors=$((want_xen + want_hyperv + want_esxi))
+    for i in $(seq 1  $((nodenumber - requested_hypervisors)) )
+    do
+      hv_list[$i]="kvm"
+    done
+    if [ $want_xen -gt 0 ]
+      for i in $(seq  $((nodenumber - requested_hypervisors + 1)) $((nodenumber - requested_hypervisors + want_xen)) )
+      do
+        hv_list[$i]="xen"
+      done
+    fi
+    if [ $want_hyperv -gt 0 ]
+      for i in $(seq  $((nodenumber - requested_hypervisors + want_xen + 1)) $((nodenumber - requested_hypervisors + want_xen + want_hyperv)) )
+      do
+        hv_list[$i]="hyperv"
+      done
+    fi
+    if [ $want_esxi -gt 0 ]
+      for i in $(seq  $((nodenumber - requested_hypervisors + want_xen + want_hyperv + 1)) $((nodenumber - requested_hypervisors + want_xen + want_hyperv + want_esxi)) )
+      do
+        hv_list[$i]="esxi"
+      done
+    fi
+
+}
+
 # bring up VMs that will take cloud controller/compute/storage roles
 function setupcompute()
 {
-    local libvirtmix
-
+    create_hypervisor_list
     setuppublicnet
     alldevices=$(echo {b..z} {a..z}{a..z})
     for i in $allnodeids ; do
@@ -777,7 +805,6 @@ function setupcompute()
         i2=$( printf %02x $i )
         macaddress="52:54:$i2:77:77:$i2"
 
-        [ "$i" -gt 1 ] && [ -n "${hvmix[$i - 2]}" ] && libvirtmix="${hvmix[$i - 2]}"
         cephvolume=""
         if [ $cephvolumenumber -gt 0 ] ; then
             for n in $(seq 1 $cephvolumenumber) ; do
@@ -812,7 +839,7 @@ function setupcompute()
             fi
         fi
 
-        onhost_create_libvirt_computenode_config /tmp/$cloud-node$i.xml $i $macaddress "$cephvolume" "$drbdvolume" "$libvirtmix"
+        onhost_create_libvirt_computenode_config /tmp/$cloud-node$i.xml $i $macaddress "$cephvolume" "$drbdvolume" "${hv_list[$i]}"
 
         virsh destroy $cloud-node$i 2>/dev/null
         virsh undefine $cloud-node$i 2>/dev/null
