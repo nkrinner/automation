@@ -1154,8 +1154,11 @@ function proposal_modify_value()
     local variable="$3"
     local value="$4"
     local operator="${5:-=}"
-
+    
     local pfile=`get_proposal_filename "${proposal}" "${proposaltype}"`
+    echo "pfile: $pfile"
+    echo "get root dir content:"
+    ls -la ~
 
     $ruby -e   "require 'rubygems';require 'json';
                 j=JSON.parse(STDIN.read);
@@ -1583,11 +1586,14 @@ function do_nova_proposal()
 ### Devel: Multi-hypervisor supprt
 ### Code to deploy nove with multiple hypervisors goes here
 
+    local proposaltype=${1:-default}
     local cmachines=`crowbar machines list | grep ^d`
     cmachines=($cmachines)
     local i
 
-    for i in $(seq 0 $(( ${$#cmachines[@]} -1 )) )
+   
+    crowbar nova proposal create $proposaltype
+    for i in $(seq 0 $(( ${#cmachines[@]} -1 )) )
     do
       proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']" "['${cmachines[$i]}']"
     done
@@ -1642,7 +1648,7 @@ function onadmin_proposal()
                 done
                 ;;
             nova)
-                do_nova_proposal
+                do_nova_proposal "default"
                 ;;
             *)
                 do_one_proposal "$proposal" "default"
