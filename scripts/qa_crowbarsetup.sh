@@ -1584,14 +1584,13 @@ function do_nova_proposal()
 ### Code to deploy nove with multiple hypervisors goes here
 
     local cmachines=`crowbar machines list | grep ^d`
+    cmachines=($cmachines)
     local i
 
-    for i in $cmachines
+    for i in $(seq 0 $(( ${$#cmachines[@]} -1 )) )
     do
-    echo "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']"
-    echo  "$i"
-    proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']" "$i"
-     done
+      proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']" "${cmachines[$i]}"
+    done
     do_one_proposal "nova" "default"
 }
 

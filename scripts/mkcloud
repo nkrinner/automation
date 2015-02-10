@@ -802,7 +802,6 @@ function create_hypervisor_list()
 # bring up VMs that will take cloud controller/compute/storage roles
 function setupcompute()
 {
-    create_hypervisor_list
     setuppublicnet
     alldevices=$(echo {b..z} {a..z}{a..z})
     for i in $allnodeids ; do
@@ -1191,6 +1190,7 @@ function sanity_checks()
        echo 'hosts for xen, hyperv and esxi virtualization hosts.'
        exit 1
     fi
+    create_hypervisor_list
 
     vgdisplay "$cloudvg" >/dev/null 2>&1 && needcvol=
     if [ -n "$needcvol" ] ; then
