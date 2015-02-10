@@ -1589,7 +1589,7 @@ function do_nova_proposal()
 
     for i in $(seq 0 $(( ${$#cmachines[@]} -1 )) )
     do
-      proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']" "${cmachines[$i]}"
+      proposal_set_value nova default "['deployment']['nova']['elements']['nova-multi-compute-${hv_list[$i]}']" "['${cmachines[$i]}']"
     done
     do_one_proposal "nova" "default"
 }
