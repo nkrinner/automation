@@ -439,28 +439,25 @@ function export_tftpboot_repos_dir()
     tftpboot_repos_dir=/srv/tftpboot/repos
     tftpboot_suse_dir=/srv/tftpboot/suse-11.3
 
-    if iscloudver 5plus; then
+    if iscloudver 5; then
+        tftpboot_repos_dir=$tftpboot_suse_dir/repos
         tftpboot_suse12_dir=/srv/tftpboot/suse-12.0
-
-        if iscloudver 6plus || [[ ! $cloudsource =~ ^M[1-6]+$ ]]; then
-            tftpboot_suse12_dir=/srv/tftpboot/suse-12.0/x86_64
-            tftpboot_repos_dir=$tftpboot_suse_dir/x86_64/repos
-            tftpboot_repos12_dir=$tftpboot_suse12_dir/repos
-        else
-            # Cloud 5 M1 to M4 use the old-style paths
-            tftpboot_repos12_dir=/srv/tftpboot/repos
-        fi
+        tftpboot_repos12_dir=$tftpboot_suse12_dir/repos
     fi
 
     if iscloudver 6plus; then
-        if [[ ! $cloudsource =~ ^M[1-6]+$ ]]; then
-            tftpboot_suse12sp1_dir=/srv/tftpboot/suse-12.1/x86_64
-            tftpboot_repos12sp1_dir=/srv/tftpboot/suse-12.1/x86_64/repos
+        if iscloudver 6 && [[ $cloudsource =~ ^M[1-6]+$ ]]; then
+            tftpboot_suse_dir=/srv/tftpboot/suse-11.3
+            tftpboot_suse12_dir=/srv/tftpboot/suse-12.0
+            tftpboot_suse12sp1_dir=/srv/tftpboot/suse-12.1
         else
-            # Multiple architecture support only after Cloud 6 M6
-            tftpboot_suse12sp1_dir=/srv/tftpboot/suse-12.1/
-            tftpboot_repos12sp1_dir=/srv/tftpboot/suse-12.1/repos
+            tftpboot_suse_dir=/srv/tftpboot/suse-11.3/x86_64
+            tftpboot_suse12_dir=/srv/tftpboot/suse-12.0/x86_64
+            tftpboot_suse12sp1_dir=/srv/tftpboot/suse-12.1/x86_64
         fi
+        tftpboot_repos_dir=$tftpboot_suse_dir/repos
+        tftpboot_repos12_dir=$tftpboot_suse12_dir/repos
+        tftpboot_repos12sp1_dir=$tftpboot_suse12sp1_dir/repos
     fi
 }
 
@@ -2358,6 +2355,12 @@ function custom_configuration()
             if iscloudver 5plus ; then
                 repos="$autoyast['repos']['suse-11.3']"
                 proposal_set_value provisioner default "$repos" "{}"
+                if iscloudver 6plus; then
+                    if ! iscloudver 6 || [[ ! $cloudsource =~ ^M[1-6]+$ ]]; then
+                        repos="$repos['x86_64']"
+                        proposal_set_value provisioner default "$repos" "{}"
+                    fi
+                fi
             fi
 
             if [ -d "$tftpboot_repos_dir/SLES11-SP3-Updates-test/" ]; then
@@ -2387,6 +2390,12 @@ function custom_configuration()
             if iscloudver 5plus ; then
                 repos="$autoyast['repos']['suse-12.0']"
                 proposal_set_value provisioner default "$repos" "{}"
+                if iscloudver 6plus; then
+                    if ! iscloudver 6 || [[ ! $cloudsource =~ ^M[1-6]+$ ]]; then
+                        repos="$repos['x86_64']"
+                        proposal_set_value provisioner default "$repos" "{}"
+                    fi
+                fi
 
                 if [ -d "$tftpboot_repos12_dir/SLES12-Updates-test/" ]; then
                     proposal_set_value provisioner default "$repos['SLES12-Updates-test']" "{}"
@@ -2422,6 +2431,12 @@ function custom_configuration()
             if iscloudver 6plus ; then
                 repos="$autoyast['repos']['suse-12.1']"
                 proposal_set_value provisioner default "$repos" "{}"
+                if iscloudver 6plus; then
+                    if ! iscloudver 6 || [[ ! $cloudsource =~ ^M[1-6]+$ ]]; then
+                        repos="$repos['x86_64']"
+                        proposal_set_value provisioner default "$repos" "{}"
+                    fi
+                fi
 
                 if [ -d "$tftpboot_repos12sp1_dir/SLES12-SP1-Updates-test/" ]; then
                     proposal_set_value provisioner default "$repos['SLES12-SP1-Updates-test']" "{}"
