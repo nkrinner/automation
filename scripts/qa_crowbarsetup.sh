@@ -4033,7 +4033,7 @@ function oncontroller_manila_generic_driver_setup()
             manila-service-image
     fi
 
-    if ! nova flavor-show manila-service-image-flavor; then
+    if ! nova flavor-list | grep -q "manila-service-image-flavor"; then
         nova flavor-create manila-service-image-flavor 100 512 0 1
     fi
 
